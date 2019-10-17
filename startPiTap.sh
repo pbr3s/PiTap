@@ -41,6 +41,15 @@ elif [ $1 = "mode2" ]; then
 	mkdir $captureDirectory/$timestampedDirectory
 	# Start rotating captures in session-specific folder.
 	tcpdump -i bridge0 -w $captureDirectory/$timestampedDirectory/dump-at-%s.pcapng -G 3600
+elif [ $1 = "mode3" ]; then
+	# MODE 3: With limited sessions number and limited file size
+	timestampedDirectory=$sessionTimestamp-$RANDOM
+	mkdir $captureDirectory/$timestampedDirectory
+	# Start rotating captures in session-specific folder.
+	# the default configuration creates around 5000mb. small differences are expected due to the unknown size of the last package 
+	# of each session file.
+	# -W number of sessions. default: 100 | -C filesize in MB. default: 50
+	tcpdump -i bridge0 -w $captureDirectory/$timestampedDirectory/dump-at-%s.pcapng -C 50 -W 100 
 else
 	echo "PiTap has been configured to use an unknown mode!" >> $logFile
 fi
